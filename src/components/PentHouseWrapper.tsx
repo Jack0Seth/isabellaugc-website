@@ -26,7 +26,7 @@ const AnimatedPenthouse = (props: any) => {
             gsap.to(groupRef.current.rotation, {
                 x: 0.02,
                 duration: 4,
-                ease: "sine.inOut",
+                ease: "",
                 yoyo: true,
                 repeat: -1,
             });
