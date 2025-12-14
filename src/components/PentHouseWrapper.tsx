@@ -3,13 +3,12 @@
 import { Suspense, useRef, useEffect, useState } from "react";
 import { Penthouse } from "./PentHouse";
 import { Canvas } from "@react-three/fiber";
-import { Environment, PerspectiveCamera, Html } from "@react-three/drei";
+import { Environment, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useRouter } from "next/navigation";
-import Loading from "../app/loading";
 
 // Register ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -70,18 +69,18 @@ const AnimatedPenthouse = (props: any) => {
         const rightDoor = groupRef.current.getObjectByName("penthouse_door_right");
 
         if (leftDoor && rightDoor) {
-            // Open Doors at 80% of the timeline
+            // Open Doors when camera gets near (around 50% of the timeline)
             tl.to(leftDoor.rotation, {
-                z: -Math.PI / 2, // Rotate 90 degrees outward (check axis!)
-                duration: 2,
+                z: -Math.PI / 2, // Rotate 90 degrees outward
+                duration: 3,
                 ease: "power1.inOut",
-            }, 8);
+            }, 5);
 
             tl.to(rightDoor.rotation, {
                 z: Math.PI / 2, // Rotate 90 degrees outward
-                duration: 2,
+                duration: 3,
                 ease: "power1.inOut",
-            }, 8);
+            }, 5);
         }
 
     }, [isLoading, router]);
@@ -114,11 +113,7 @@ const PenthouseWrapper = () => {
                     <directionalLight position={[10, 1, 10]} intensity={1} />
                     <PerspectiveCamera makeDefault position={[0, 5, 12]} />
                     <Environment preset="sunset" />
-                    <Suspense fallback={
-                        <Html>
-                            <Loading />
-                        </Html>
-                    }>
+                    <Suspense fallback={null}>
                         <AnimatedPenthouse position={[0, 2, -5]} scale={[0.4, 0.4, 0.4]} />
                     </Suspense>
                 </Canvas>

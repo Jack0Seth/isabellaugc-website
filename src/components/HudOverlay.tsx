@@ -172,7 +172,7 @@ const HudOverlay: React.FC = () => {
             <div className="hud-card-wrapper absolute bottom-16 right-16 w-80 backdrop-blur-md bg-white/10 border border-black/10 p-6 rounded-lg shadow-sm fixed">
                 <div className="flex flex-col gap-2">
                     <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-black/60">Current Collection</span>
-                    <h3 className="font-playfair text-2xl text-black">Sunset Atelier</h3>
+                    <h3 className="font-playfair text-2xl text-black">The Golden Collection</h3>
 
                     <div className="w-full h-[1px] bg-black/10 my-2" />
 
