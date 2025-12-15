@@ -92,7 +92,7 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
         // Move Position with left → center → right movement pattern
         // Phase 1: Move left and forward (0-3.3 seconds / first third)
         tl.to(groupRef.current.position, {
-            x: 1.5,  // Move left
+            x: 3.5,  // Move left
             y: 3,   // Slight vertical adjustment
             z: 0,   // Move forward a bit
             duration: 3,
