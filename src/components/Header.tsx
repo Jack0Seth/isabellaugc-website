@@ -23,11 +23,11 @@ const Header: React.FC = () => {
     <>
       <NavigationOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
 
-      <header className="absolute top-0 left-0 w-full z-50 p-8">
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
+      <header className="absolute top-5 left-0 w-full z-50 py-8 px-18">
+        <div className="flex justify-between items-center">
 
           {/* Logo on the left */}
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer">
             {/* Wrapper needed for 3D perspective.
               The 'perspective' class is crucial for rotationY to work.
             */}
