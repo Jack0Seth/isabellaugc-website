@@ -22,7 +22,7 @@ const Player = () => {
     const { camera } = useThree();
     const velocity = useRef(new THREE.Vector3())
     const direction = useRef(new THREE.Vector3())
-    const WALK_SPEED = 5;
+    const WALK_SPEED = 10;
     const SPRINT_SPEED = 15;
     const JUMP_FORCE = 10;
     const GRAVITY = 25;
