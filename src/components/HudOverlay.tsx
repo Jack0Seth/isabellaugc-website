@@ -116,78 +116,78 @@ const HudOverlay: React.FC = () => {
     return (
         <div ref={containerRef} className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
             {/* Top Left Bracket */}
-            <div className="hud-bracket absolute top-8 left-8 w-48 h-48 border-l-2 border-t-2 border-black/80 opacity-60 fixed">
-                <div className="absolute top-0 right-0 w-2 h-2 bg-black/80" />
-                <div className="absolute bottom-0 left-0 w-2 h-2 bg-black/80" />
-                <div className="absolute top-4 left-0 w-2 h-[1px] bg-black/50" />
-                <div className="absolute top-8 left-0 w-2 h-[1px] bg-black/50" />
-                <div className="absolute top-12 left-0 w-2 h-[1px] bg-black/50" />
+            <div className="hud-bracket absolute top-8 left-8 w-48 h-48 border-l-2 border-t-2 border-main-black/80 opacity-60 fixed">
+                <div className="absolute top-0 right-0 w-2 h-2 bg-main-black/80" />
+                <div className="absolute bottom-0 left-0 w-2 h-2 bg-main-black/80" />
+                <div className="absolute top-4 left-0 w-2 h-[1px] bg-main-black/50" />
+                <div className="absolute top-8 left-0 w-2 h-[1px] bg-main-black/50" />
+                <div className="absolute top-12 left-0 w-2 h-[1px] bg-main-black/50" />
             </div>
 
             {/* Top Right Bracket */}
-            <div className="hud-bracket absolute top-8 right-8 w-48 h-48 border-r-2 border-t-2 border-black/80 opacity-60 fixed">
-                <div className="absolute top-0 left-0 w-2 h-2 bg-black/80" />
-                <div className="absolute bottom-0 right-0 w-2 h-2 bg-black/80" />
+            <div className="hud-bracket absolute top-8 right-8 w-48 h-48 border-r-2 border-t-2 border-main-black/80 opacity-60 fixed">
+                <div className="absolute top-0 left-0 w-2 h-2 bg-main-black/80" />
+                <div className="absolute bottom-0 right-0 w-2 h-2 bg-main-black/80" />
             </div>
 
             {/* Left Vertical Ruler */}
-            <div className="hud-ruler absolute left-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-black/20 flex flex-col justify-between items-center fixed">
+            <div className="hud-ruler absolute left-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex flex-col justify-between items-center fixed">
                 {/* Ticks */}
                 {Array.from({ length: 15 }).map((_, i) => (
-                    <div key={i} className={`w-2 h-[1px] bg-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
+                    <div key={i} className={`w-2 h-[1px] bg-main-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
                 ))}
 
                 {/* Interactive Indicator */}
-                <div ref={leftIndicatorRef} className="absolute top-0 left-[-4px] w-0 h-0 border-l-[6px] border-r-[0px] border-t-[4px] border-b-[4px] border-l-black border-t-transparent border-b-transparent" />
+                <div ref={leftIndicatorRef} className="absolute top-0 left-[-4px] w-0 h-0 border-l-[6px] border-r-[0px] border-t-[4px] border-b-[4px] border-l-main-black border-t-transparent border-b-transparent" />
             </div>
 
             {/* Right Vertical Ruler */}
-            <div className="hud-ruler absolute right-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-black/20 flex flex-col justify-between items-center fixed">
+            <div className="hud-ruler absolute right-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex flex-col justify-between items-center fixed">
                 {/* Ticks */}
                 {Array.from({ length: 15 }).map((_, i) => (
-                    <div key={i} className={`w-2 h-[1px] bg-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
+                    <div key={i} className={`w-2 h-[1px] bg-main-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
                 ))}
 
                 {/* Interactive Indicator */}
-                <div ref={rightIndicatorRef} className="absolute top-0 right-[-4px] w-0 h-0 border-r-[6px] border-l-[0px] border-t-[4px] border-b-[4px] border-r-black border-t-transparent border-b-transparent" />
+                <div ref={rightIndicatorRef} className="absolute top-0 right-[-4px] w-0 h-0 border-r-[6px] border-l-[0px] border-t-[4px] border-b-[4px] border-r-main-black border-t-transparent border-b-transparent" />
             </div>
 
             {/* Bottom Left Area - Title & CTA */}
             <div className="absolute bottom-24 left-16 flex flex-col items-start gap-4 fixed">
                 <div className="hud-title-wrapper pointer-events-auto overflow-hidden">
-                    <h2 className="hud-title-inner font-instrument-sans text-5xl md:text-7xl font-bold text-neutral-800 uppercase leading-none tracking-tighter opacity-80">
+                    <h2 className="hud-title-inner font-instrument-sans text-5xl md:text-7xl font-bold text-main-black uppercase leading-none tracking-tighter opacity-80">
                         Crafted<br />to Shine
                     </h2>
                 </div>
 
                 <div className="hud-btn-wrapper">
-                    <button className="hud-btn-inner pointer-events-auto group flex items-center gap-3 px-6 py-3 bg-transparent border border-black/30 hover:bg-black hover:text-white transition-all duration-300 rounded-sm mt-4">
-                        <span className="font-instrument-sans text-xs tracking-[0.2em] uppercase font-bold">Explore Content</span>
-                        <div className="w-2 h-2 bg-black group-hover:bg-white transition-colors rotate-45" />
+                    <button className="hud-btn-inner pointer-events-auto group flex items-center gap-3 px-6 py-3 bg-transparent border border-main-black/30 hover:bg-main-black hover:text-accent-cream transition-all duration-300 rounded-sm mt-4">
+                        <span className="font-instrument-sans text-xs tracking-[0.2em] uppercase font-bold text-main-black group-hover:text-accent-cream">Explore Content</span>
+                        <div className="w-2 h-2 bg-main-black group-hover:bg-accent-cream transition-colors rotate-45" />
                     </button>
                 </div>
             </div>
 
             {/* Bottom Right Area - Glass Card */}
-            <div className="hud-card-wrapper absolute bottom-16 right-16 w-80 backdrop-blur-md bg-white/10 border border-black/10 p-6 rounded-lg shadow-sm fixed">
+            <div className="hud-card-wrapper absolute bottom-16 right-16 w-80 backdrop-blur-md bg-accent-cream/20 border border-sec-beige/30 p-6 rounded-lg shadow-sm fixed">
                 <div className="flex flex-col gap-2">
-                    <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-black/60">Current Collection</span>
-                    <h3 className="font-playfair text-2xl text-black">The Golden Collection</h3>
+                    <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-sec-dark-grey">Most Popular Collection</span>
+                    <h3 className="font-playfair text-2xl text-main-black">The Icon Edit</h3>
 
-                    <div className="w-full h-[1px] bg-black/10 my-2" />
+                    <div className="w-full h-[1px] bg-main-black/10 my-2" />
 
                     <div className="flex justify-between items-center">
-                        <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-black/60">Craftsmanship</span>
-                        <span ref={percentageRef} className="font-instrument-sans text-xs font-bold text-black">0%</span>
+                        <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-sec-dark-grey">Popularity</span>
+                        <span ref={percentageRef} className="font-instrument-sans text-xs font-bold text-sec-light-gold">0%</span>
                     </div>
                     {/* Progress Bar */}
-                    <div className="w-full h-1 bg-black/10 mt-1 rounded-full overflow-hidden">
-                        <div className="hud-progress-bar w-[98%] h-full bg-black/80" />
+                    <div className="w-full h-1 bg-main-black/10 mt-1 rounded-full overflow-hidden">
+                        <div className="hud-progress-bar w-[98%] h-full bg-sec-gold" />
                     </div>
                 </div>
 
                 {/* Decorative Corner on card */}
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-black/40" />
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-sec-gold/60" />
             </div>
 
             {/* Bottom Linear Scale */}
@@ -195,16 +195,18 @@ const HudOverlay: React.FC = () => {
                 {Array.from({ length: 40 }).map((_, i) => (
                     <div
                         key={i}
-                        className={`w-[1px] bg-black ${i % 5 === 0 ? 'h-3' : 'h-1.5'}`}
+                        className={`w-[1px] bg-main-black ${i % 5 === 0 ? 'h-3' : 'h-1.5'}`}
                     />
                 ))}
             </div>
 
             {/* Floating Label Example (Center-ish) */}
-            <div className="hud-center-label-wrapper absolute top-1/2 left-[60%] fixed">
-                <div className="hud-center-label-inner flex items-center gap-2 opacity-70">
-                    <div className="w-8 h-[1px] bg-black" />
-                    <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-black">Showcase Window</span>
+            <div className="hud-center-label-wrapper absolute top-[65%] left-[63%] fixed">
+                <div className="hud-center-label-inner flex items-center gap-2">
+                    <div className="w-12 h-[1px] bg-main-black/60" />
+                    <div className="backdrop-blur-md bg-accent-cream/30 border border-main-white/40 px-3 py-1.5 rounded-sm shadow-sm">
+                        <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-main-black font-semibold">Showcase Window</span>
+                    </div>
                 </div>
             </div>
         </div>

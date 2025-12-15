@@ -23,9 +23,9 @@ const Player = () => {
     const velocity = useRef(new THREE.Vector3())
     const direction = useRef(new THREE.Vector3())
     const WALK_SPEED = 5;
-    const SPRINT_SPEED = 10;
-    const JUMP_FORCE = 5;
-    const GRAVITY = 15;
+    const SPRINT_SPEED = 15;
+    const JUMP_FORCE = 10;
+    const GRAVITY = 25;
     
     // Y-velocity for jumping
     const velocityY = useRef(0);

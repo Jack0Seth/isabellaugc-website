@@ -11,6 +11,26 @@
   --font-playfair: var(--font-playfair);
   --font-instrument-sans: var(--font-instrument-sans);
   --font-cormorant-garamond: var(--font-cormorant-garamond);
+
+  /* New Palette */
+  /* Main */
+  --color-main-white: #FFFFFF;
+  --color-main-black: #231F20;
+  --color-main-grey: #CCCCCC;
+
+  /* Backgrounds */
+  --color-bg-black: #000000;
+  --color-bg-cream: #F6F3E8;
+
+  /* Accents */
+  --color-accent-cream: #FFFDF5;
+  --color-accent-bronze: #D2926E;
+
+  /* Secondary */
+  --color-sec-gold: #C9AB6A;
+  --color-sec-beige: #C5BDB6;
+  --color-sec-light-gold: #D8AB71;
+  --color-sec-dark-grey: #777470;
 }
 
 @media (prefers-color-scheme: dark) {
