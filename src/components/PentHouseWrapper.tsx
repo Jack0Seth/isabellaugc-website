@@ -13,8 +13,16 @@ import { useRouter } from "next/navigation";
 // Register ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
+// Debug info interface
+interface DebugInfo {
+    progress: number;
+    phase: string;
+    position: { x: number; y: number; z: number };
+    scale: { x: number; y: number; z: number };
+}
+
 // Animated wrapper component for the Penthouse
-const AnimatedPenthouse = (props: any) => {
+const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => void }) => {
     const groupRef = useRef<THREE.Group>(null);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +37,32 @@ const AnimatedPenthouse = (props: any) => {
                 end: "bottom bottom",
                 scrub: 1.5,
                 onUpdate: (self) => {
+                    // Update debug info
+                    if (props.onDebugUpdate && groupRef.current) {
+                        const progress = self.progress;
+                        let phase = "Phase 1: Moving right";
+                        if (progress > 0.33 && progress <= 0.66) {
+                            phase = "Phase 2: Center transition";
+                        } else if (progress > 0.66) {
+                            phase = "Phase 3: Moving left";
+                        }
+
+                        props.onDebugUpdate({
+                            progress: Math.round(progress * 100),
+                            phase,
+                            position: {
+                                x: parseFloat(groupRef.current.position.x.toFixed(2)),
+                                y: parseFloat(groupRef.current.position.y.toFixed(2)),
+                                z: parseFloat(groupRef.current.position.z.toFixed(2)),
+                            },
+                            scale: {
+                                x: parseFloat(groupRef.current.scale.x.toFixed(2)),
+                                y: parseFloat(groupRef.current.scale.y.toFixed(2)),
+                                z: parseFloat(groupRef.current.scale.z.toFixed(2)),
+                            },
+                        });
+                    }
+
                     // Check if we are near the end to trigger loading/redirect
                     if (self.progress > 0.95 && !isLoading) {
                         setIsLoading(true);
@@ -55,13 +89,33 @@ const AnimatedPenthouse = (props: any) => {
             ease: "power2.inOut",
         }, 0);
 
-        // Move Position to simulate entering (optional, if scale isn't enough)
+        // Move Position with left → center → right movement pattern
+        // Phase 1: Move left and forward (0-3.3 seconds / first third)
         tl.to(groupRef.current.position, {
-            y: -2, // Adjust to center the door
-            z: 8,  // Move closer to camera
-            duration: 10,
-            ease: "power2.inOut",
+            x: 1.5,  // Move left
+            y: 3,   // Slight vertical adjustment
+            z: 0,   // Move forward a bit
+            duration: 3,
+            ease: "power2.out",
         }, 0);
+
+        // Phase 2: Move back to center and continue forward (3.3-6.6 seconds / middle third)
+        tl.to(groupRef.current.position, {
+            x: 2.5,   // Back to center
+            y: 1,  // Continue lowering
+            z: 0,   // Move closer
+            duration: 3,
+            ease: "power2.inOut",
+        }, 3.3);
+
+        // Phase 3: Move right and approach final position (6.6-10 seconds / last third)
+        tl.to(groupRef.current.position, {
+            x: 1,   // Move right
+            y: 1,  // Final vertical position
+            z: 1,   // Final z position
+            duration: 3.4,
+            ease: "power2.in",
+        }, 6);
 
         // Door Animation
         // Access doors via getObjectByName since we named them in PentHouse.tsx
