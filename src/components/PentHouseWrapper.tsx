@@ -71,16 +71,16 @@ const AnimatedPenthouse = (props: any) => {
         if (leftDoor && rightDoor) {
             // Open Doors when camera gets near (around 50% of the timeline)
             tl.to(leftDoor.rotation, {
-                z: -Math.PI / 2, // Rotate 90 degrees outward
+                y: -Math.PI / 2, // Rotate 90 degrees outward
                 duration: 3,
                 ease: "power1.inOut",
-            }, 5);
+            }, 1);
 
             tl.to(rightDoor.rotation, {
-                z: Math.PI / 2, // Rotate 90 degrees outward
+                y: Math.PI / 2, // Rotate 90 degrees outward
                 duration: 3,
                 ease: "power1.inOut",
-            }, 5);
+            }, 1);
         }
 
     }, [isLoading, router]);
