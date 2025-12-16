@@ -116,7 +116,7 @@ const HudOverlay: React.FC = () => {
     return (
         <div ref={containerRef} className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
             {/* Top Left Bracket */}
-            <div className="hud-bracket absolute top-8 left-8 w-48 h-48 border-l-2 border-t-2 border-main-black/80 opacity-60 fixed">
+            <div className="hud-bracket absolute top-4 left-4 w-24 h-24 md:top-8 md:left-8 md:w-48 md:h-48 border-l-2 border-t-2 border-main-black/80 opacity-60 fixed">
                 <div className="absolute top-0 right-0 w-2 h-2 bg-main-black/80" />
                 <div className="absolute bottom-0 left-0 w-2 h-2 bg-main-black/80" />
                 <div className="absolute top-4 left-0 w-2 h-[1px] bg-main-black/50" />
@@ -125,13 +125,13 @@ const HudOverlay: React.FC = () => {
             </div>
 
             {/* Top Right Bracket */}
-            <div className="hud-bracket absolute top-8 right-8 w-48 h-48 border-r-2 border-t-2 border-main-black/80 opacity-60 fixed">
+            <div className="hud-bracket absolute top-4 right-4 w-24 h-24 md:top-8 md:right-8 md:w-48 md:h-48 border-r-2 border-t-2 border-main-black/80 opacity-60 fixed">
                 <div className="absolute top-0 left-0 w-2 h-2 bg-main-black/80" />
                 <div className="absolute bottom-0 right-0 w-2 h-2 bg-main-black/80" />
             </div>
 
-            {/* Left Vertical Ruler */}
-            <div className="hud-ruler absolute left-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex flex-col justify-between items-center fixed">
+            {/* Left Vertical Ruler - Hidden on mobile */}
+            <div className="hud-ruler hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex-col justify-between items-center fixed">
                 {/* Ticks */}
                 {Array.from({ length: 15 }).map((_, i) => (
                     <div key={i} className={`w-2 h-[1px] bg-main-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
@@ -141,8 +141,8 @@ const HudOverlay: React.FC = () => {
                 <div ref={leftIndicatorRef} className="absolute top-0 left-[-4px] w-0 h-0 border-l-[6px] border-r-[0px] border-t-[4px] border-b-[4px] border-l-main-black border-t-transparent border-b-transparent" />
             </div>
 
-            {/* Right Vertical Ruler */}
-            <div className="hud-ruler absolute right-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex flex-col justify-between items-center fixed">
+            {/* Right Vertical Ruler - Hidden on mobile */}
+            <div className="hud-ruler hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex-col justify-between items-center fixed">
                 {/* Ticks */}
                 {Array.from({ length: 15 }).map((_, i) => (
                     <div key={i} className={`w-2 h-[1px] bg-main-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
@@ -153,9 +153,9 @@ const HudOverlay: React.FC = () => {
             </div>
 
             {/* Bottom Left Area - Title & CTA */}
-            <div className="absolute bottom-24 left-16 flex flex-col items-start gap-4 fixed">
+            <div className="absolute bottom-16 left-6 md:bottom-24 md:left-16 flex flex-col items-start gap-4 fixed">
                 <div className="hud-title-wrapper pointer-events-auto overflow-hidden">
-                    <h2 className="hud-title-inner font-instrument-sans text-5xl md:text-7xl font-bold text-main-black uppercase leading-none tracking-tighter opacity-80">
+                    <h2 className="hud-title-inner font-instrument-sans text-3xl md:text-5xl lg:text-7xl font-bold text-main-black uppercase leading-none tracking-tighter opacity-80">
                         Crafted<br />to Shine
                     </h2>
                 </div>
@@ -168,8 +168,8 @@ const HudOverlay: React.FC = () => {
                 </div>
             </div>
 
-            {/* Bottom Right Area - Glass Card */}
-            <div className="hud-card-wrapper absolute bottom-16 right-16 w-80 backdrop-blur-md bg-accent-cream/20 border border-sec-beige/30 p-6 rounded-lg shadow-sm fixed">
+            {/* Bottom Right Area - Glass Card - Hidden on mobile/tablet */}
+            <div className="hud-card-wrapper hidden lg:block absolute bottom-16 right-16 w-80 backdrop-blur-md bg-accent-cream/20 border border-sec-beige/30 p-6 rounded-lg shadow-sm fixed">
                 <div className="flex flex-col gap-2">
                     <span className="font-instrument-sans text-[10px] tracking-widest uppercase text-sec-dark-grey">Most Popular Collection</span>
                     <h3 className="font-playfair text-2xl text-main-black">The Icon Edit</h3>
@@ -200,8 +200,8 @@ const HudOverlay: React.FC = () => {
                 ))}
             </div>
 
-            {/* Floating Label Example (Center-ish) */}
-            <div className="hud-center-label-wrapper absolute top-[65%] left-[63%] fixed">
+            {/* Floating Label Example (Center-ish) - Hidden on mobile */}
+            <div className="hud-center-label-wrapper hidden md:block absolute top-[65%] left-[63%] fixed">
                 <div className="hud-center-label-inner flex items-center gap-2">
                     <div className="w-12 h-[1px] bg-main-black/60" />
                     <div className="backdrop-blur-md bg-accent-cream/30 border border-main-white/40 px-3 py-1.5 rounded-sm shadow-sm">

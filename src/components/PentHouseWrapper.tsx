@@ -47,7 +47,7 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
                         // P2: 3-6s (0.176 - 0.353)
                         // P3: 6-12s (0.353 - 0.706)
                         // P4: 12-17s (0.706 - 1.0)
-                        
+
                         if (progress > 0.176 && progress <= 0.353) {
                             phase = "Phase 2: Center Approach";
                         } else if (progress > 0.353 && progress <= 0.706) {
@@ -88,7 +88,7 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
         camera.rotation.set(0, 0, 0); // Reset rotation to be sure
 
         // --- CAMERA ANIMATION PATH (4 Phases -> Total 17s) ---
-        
+
         // Phase 1: Move Camera Left and Forward (0s - 3s)
         tl.to(camera.position, {
             x: -1,   // Camera moves left
@@ -116,7 +116,7 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
             ease: "sine.inOut",
         }, 3);
 
-         tl.to(camera.rotation, {
+        tl.to(camera.rotation, {
             y: 0,    // Look straight
             duration: 3,
             ease: "sine.inOut",
@@ -125,11 +125,11 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
 
         // Phase 3: Move Camera Right (6s - 12s) [Extended 6s duration]
         // Split into 2 steps for smoother rotation curve
-        
+
         // Step 3a: Mid-way turn (6s - 9s)
         tl.to(camera.position, {
             x: 0,    // Moving towards right
-            y: 3,    
+            y: 3,
             z: -3.2,   // Approaching
             duration: 3,
             ease: "none", // Linear for middle segment
@@ -145,7 +145,7 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
         tl.to(camera.position, {
             x: 0,    // Final right position
             y: 3,
-            z: -4,   
+            z: -4,
             duration: 3,
             ease: "none",
         }, 9);
@@ -175,22 +175,22 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
 
         // Door Animation (Aligned to timeline)
         if (groupRef.current) {
-             const leftDoor = groupRef.current.getObjectByName("penthouse_door_left");
-             const rightDoor = groupRef.current.getObjectByName("penthouse_door_right");
+            const leftDoor = groupRef.current.getObjectByName("penthouse_door_left");
+            const rightDoor = groupRef.current.getObjectByName("penthouse_door_right");
 
-             if (leftDoor && rightDoor) {
-                 tl.to(leftDoor.rotation, {
-                     y: -Math.PI / 2,
-                     duration: 3,
-                     ease: "power1.inOut",
-                 }, 2); // Open during Phase 3
+            if (leftDoor && rightDoor) {
+                tl.to(leftDoor.rotation, {
+                    y: -Math.PI / 2,
+                    duration: 3,
+                    ease: "power1.inOut",
+                }, 2); // Open during Phase 3
 
-                 tl.to(rightDoor.rotation, {
-                     y: Math.PI / 2,
-                     duration: 3,
-                     ease: "power1.inOut",
-                 }, 2);
-             }
+                tl.to(rightDoor.rotation, {
+                    y: Math.PI / 2,
+                    duration: 3,
+                    ease: "power1.inOut",
+                }, 2);
+            }
         }
 
     }, [isLoading, router, camera]);
@@ -227,8 +227,8 @@ const PenthouseWrapper = () => {
                     <PerspectiveCamera makeDefault position={[0, 5, 12]} />
                     <Environment preset="sunset" />
                     <Suspense fallback={null}>
-                        <AnimatedPenthouse 
-                            position={[0, 2, -5]} 
+                        <AnimatedPenthouse
+                            position={[0, 2, -5]}
                             scale={[0.4, 0.4, 0.4]}
                             onDebugUpdate={setDebugInfo}
                         />

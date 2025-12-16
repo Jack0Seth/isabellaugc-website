@@ -4,6 +4,10 @@ import * as THREE from 'three'
 import React, { useRef, useEffect } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { GrassGround } from './shaders/GrassShaderMaterial';
+import { WaterPool } from './shaders/WaterShaderMaterial';
+
+const GRASS_POSITION: [number, number, number] = [-3.78, 0.014, 4.42];
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -17,21 +21,7 @@ type GLTFResult = GLTF & {
 export function Penthouse(props: any) {
   const { nodes, materials } = useGLTF('/models/penthouse.glb') as unknown as GLTFResult
 
-  useEffect(() => {
-    if (nodes) {
-      console.log('--- Penthouse Model Nodes ---');
-      Object.entries(nodes).forEach(([name, node]) => {
-        if ((node as any).isMesh) {
-          console.log(`Mesh: ${name}`);
-        } else if ((node as any).isBone) {
-          console.log(`Bone: ${name}`);
-        } else {
-          console.log(`Other (${node.type}): ${name}`);
-        }
-      });
-      console.log('--- End Nodes ---');
-    }
-  }, [nodes]);
+
 
   return (
     <group {...props} dispose={null}>
@@ -613,12 +603,9 @@ export function Penthouse(props: any) {
         material={materials['17_-_Old_Copper_1']}
         position={[6.688, 4.38, 4.608]}
       />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes['Line025_22_-_Default_0'].geometry}
-        material={materials['22_-_Default']}
-        position={[-3.78, 0.014, 4.42]}
+      <GrassGround
+        geometry={nodes.grass_ground.geometry}
+        position={GRASS_POSITION}
       />
       <mesh
         castShadow
@@ -627,11 +614,8 @@ export function Penthouse(props: any) {
         material={materials['21_-_Default']}
         position={[6.785, 0.014, -2.357]}
       />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes['Object001_19_-_Glass_(Thin_wall)_0'].geometry}
-        material={materials['19_-_Glass_Thin_wall']}
+      <WaterPool
+        geometry={nodes.pool_water.geometry}
         position={[3.956, 0.117, 7.964]}
       />
       <mesh
@@ -934,6 +918,13 @@ export function Penthouse(props: any) {
         geometry={nodes['Shape012_02_-_Default_0'].geometry}
         material={materials['02_-_Default']}
         position={[11.908, 5.496, 3.04]}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Shape013_Ceramic_0.geometry}
+        material={materials.Ceramic}
+        position={[-2.442, 2.975, 7.425]}
       />
       <mesh
         castShadow
