@@ -217,9 +217,6 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
 };
 
 const PenthouseWrapper = () => {
-    const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
-    const [showDebug, setShowDebug] = useState(false); // Toggle debug overlay
-
     return (
         <div style={{ height: "400vh", position: "relative" }}> {/* Add scrollable height */}
             <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%" }}>
@@ -232,85 +229,10 @@ const PenthouseWrapper = () => {
                         <AnimatedPenthouse
                             position={[0, 2, -5]}
                             scale={[0.4, 0.4, 0.4]}
-                            onDebugUpdate={setDebugInfo}
                         />
                     </Suspense>
                 </Canvas>
             </div>
-
-            {/* Debug Overlay */}
-            {showDebug && debugInfo && (
-                <div style={{
-                    position: "fixed",
-                    top: 20,
-                    left: 20,
-                    background: "rgba(0, 0, 0, 0.85)",
-                    color: "#00ff00",
-                    padding: "16px",
-                    borderRadius: "8px",
-                    fontFamily: "monospace",
-                    fontSize: "13px",
-                    zIndex: 9999,
-                    minWidth: "220px",
-                    border: "1px solid #00ff00",
-                    boxShadow: "0 4px 20px rgba(0, 255, 0, 0.2)",
-                }}>
-                    <div style={{ marginBottom: "12px", fontWeight: "bold", fontSize: "15px", borderBottom: "1px solid #00ff00", paddingBottom: "8px" }}>
-                        📊 Debug Panel
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                        <span style={{ color: "#888" }}>Progress:</span> {debugInfo.progress}%
-                    </div>
-                    <div style={{ marginBottom: "12px", color: "#ffcc00", fontWeight: "bold" }}>
-                        {debugInfo.phase}
-                    </div>
-                    <div style={{ marginBottom: "8px", borderTop: "1px solid #333", paddingTop: "8px" }}>
-                        <span style={{ color: "#888" }}>Position:</span>
-                    </div>
-                    <div style={{ paddingLeft: "12px" }}>
-                        <div><span style={{ color: "#ff6b6b" }}>X:</span> {debugInfo.position.x}</div>
-                        <div><span style={{ color: "#4ecdc4" }}>Y:</span> {debugInfo.position.y}</div>
-                        <div><span style={{ color: "#45b7d1" }}>Z:</span> {debugInfo.position.z}</div>
-                    </div>
-                    <div style={{ marginTop: "8px", marginBottom: "8px", borderTop: "1px solid #333", paddingTop: "8px" }}>
-                        <span style={{ color: "#888" }}>Scale:</span>
-                    </div>
-                    <div style={{ paddingLeft: "12px" }}>
-                        <div><span style={{ color: "#ff6b6b" }}>X:</span> {debugInfo.scale.x}</div>
-                        <div><span style={{ color: "#4ecdc4" }}>Y:</span> {debugInfo.scale.y}</div>
-                        <div><span style={{ color: "#45b7d1" }}>Z:</span> {debugInfo.scale.z}</div>
-                    </div>
-                    <div style={{ marginTop: "8px", marginBottom: "8px", borderTop: "1px solid #333", paddingTop: "8px" }}>
-                        <span style={{ color: "#888" }}>Rotation:</span>
-                    </div>
-                    <div style={{ paddingLeft: "12px" }}>
-                        <div><span style={{ color: "#ff6b6b" }}>X:</span> {debugInfo.rotation.x}</div>
-                        <div><span style={{ color: "#4ecdc4" }}>Y:</span> {debugInfo.rotation.y}</div>
-                        <div><span style={{ color: "#45b7d1" }}>Z:</span> {debugInfo.rotation.z}</div>
-                    </div>
-                </div>
-            )}
-
-            {/* Debug Toggle Button */}
-            <button
-                onClick={() => setShowDebug(!showDebug)}
-                style={{
-                    position: "fixed",
-                    bottom: 20,
-                    left: 20,
-                    background: showDebug ? "#00ff00" : "#333",
-                    color: showDebug ? "#000" : "#fff",
-                    border: "none",
-                    padding: "10px 16px",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontFamily: "monospace",
-                    fontSize: "12px",
-                    zIndex: 9999,
-                }}
-            >
-                {showDebug ? "🔍 Hide Debug" : "🔍 Show Debug"}
-            </button>
 
             <ScrollFadeLogic />
         </div>
