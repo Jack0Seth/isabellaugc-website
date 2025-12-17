@@ -238,7 +238,7 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
             EXPERIENCE
           </span>
           <span className="text-sm md:text-base font-playfair italic opacity-70">
-            Isabelle UGC
+            Image Gang
           </span>
         </div>
 
