@@ -3,7 +3,7 @@
 import { Suspense, useRef, useEffect, useState } from "react";
 import { Penthouse } from "./PentHouse";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Environment, PerspectiveCamera } from "@react-three/drei";
+import { Environment, PerspectiveCamera, useProgress } from "@react-three/drei";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 
 // Register ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
+
+export const dynamic = "force-static";
 
 // Debug info interface
 interface DebugInfo {
