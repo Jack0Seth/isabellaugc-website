@@ -27,7 +27,7 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center">
 
           {/* Logo on the left */}
-          <div className="flex items-center cursor-pointer">
+          <div className="flex items-center cursor-pointer" role="button">
             {/* Wrapper needed for 3D perspective.
               The 'perspective' class is crucial for rotationY to work.
             */}

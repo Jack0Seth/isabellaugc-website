@@ -1,0 +1,109 @@
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { usePathname } from "next/navigation";
+
+export default function CustomCursor() {
+    const cursorRef = useRef<HTMLDivElement>(null);
+    const followerRef = useRef<HTMLDivElement>(null);
+    const [isPointer, setIsPointer] = useState(false);
+    const [isText, setIsText] = useState(false);
+    const [shouldHide, setShouldHide] = useState(false);
+    const pathname = usePathname();
+
+    useEffect(() => {
+        const handleToggle = (e: any) => setShouldHide(!!e.detail?.hide);
+        window.addEventListener("cursor:toggle", handleToggle);
+        return () => window.removeEventListener("cursor:toggle", handleToggle);
+    }, []);
+
+    // Reset cursor state when navigating to a new route
+    useEffect(() => {
+        setShouldHide(false);
+        // Reset GSAP positions to avoid stale stacked transforms
+        if (cursorRef.current && followerRef.current) {
+            gsap.set([cursorRef.current, followerRef.current], {
+                x: 0,
+                y: 0,
+                scale: 0,
+                xPercent: -50,
+                yPercent: -50
+            });
+        }
+    }, [pathname]);
+
+    useGSAP(() => {
+        // Initial hide
+        gsap.set(cursorRef.current, { xPercent: -50, yPercent: -50, scale: 0 });
+        gsap.set(followerRef.current, { xPercent: -50, yPercent: -50, scale: 0 });
+
+        const moveCursor = (e: MouseEvent) => {
+            gsap.to(cursorRef.current, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1,
+                ease: "power2.out",
+                scale: 1, // Ensure it's visible after first move
+            });
+            gsap.to(followerRef.current, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.3, // Slower for "lag" effect
+                ease: "power2.out",
+                scale: 1, // Ensure it's visible after first move
+            });
+        };
+
+        window.addEventListener("mousemove", moveCursor);
+
+        return () => {
+            window.removeEventListener("mousemove", moveCursor);
+        };
+    }, []);
+
+    useEffect(() => {
+        const onMouseOver = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+
+            // Pointer detection
+            const isLink = target.closest("a, button, [role='button'], .pointer-cursor") ||
+                window.getComputedStyle(target).cursor === "pointer";
+            setIsPointer(!!isLink);
+
+            // Text detection
+            const isInput = target.closest("input, textarea, [contenteditable='true'], .text-cursor");
+            setIsText(!!isInput);
+        };
+
+        window.addEventListener("mouseover", onMouseOver);
+        return () => window.removeEventListener("mouseover", onMouseOver);
+    }, []);
+
+    if (shouldHide) return null;
+
+    return (
+        <>
+            {/* Main Dot / Caret */}
+            <div
+                ref={cursorRef}
+                className={`fixed top-0 left-0 pointer-events-none z-[10001] mix-blend-difference bg-white transition-all duration-300 ease-out
+          ${isText ? "w-[1.5px] h-6 rounded-full" : ""}
+          ${isPointer ? "w-1 h-1 rounded-full opacity-50" : ""}
+          ${!isText && !isPointer ? "w-2.5 h-2.5 rounded-full" : ""}
+        `}
+            />
+
+            {/* Follower Ring / Capsule */}
+            <div
+                ref={followerRef}
+                className={`fixed top-0 left-0 pointer-events-none z-[10000] mix-blend-difference border border-white/40 rounded-full transition-all duration-500 ease-out
+          ${isPointer ? "w-14 h-14 bg-white/10 border-white" : ""}
+          ${isText ? "w-4 h-8 bg-white/5 border-white/20" : ""}
+          ${!isPointer && !isText ? "w-9 h-9" : ""}
+        `}
+            />
+        </>
+    );
+}

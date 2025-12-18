@@ -9,12 +9,12 @@ import * as THREE from "three";
 
 // Define controls
 enum Controls {
-  forward = 'forward',
-  backward = 'backward',
-  left = 'left',
-  right = 'right',
-  jump = 'jump',
-  sprint = 'sprint',
+    forward = 'forward',
+    backward = 'backward',
+    left = 'left',
+    right = 'right',
+    jump = 'jump',
+    sprint = 'sprint',
 }
 
 const Player = () => {
@@ -26,14 +26,14 @@ const Player = () => {
     const SPRINT_SPEED = 15;
     const JUMP_FORCE = 10;
     const GRAVITY = 25;
-    
+
     // Y-velocity for jumping
     const velocityY = useRef(0);
     const isJumping = useRef(false);
 
     useFrame((state, delta) => {
         const { forward, backward, left, right, sprint, jump } = get()
-        
+
         const speed = sprint ? SPRINT_SPEED : WALK_SPEED;
 
         direction.current.x = Number(Boolean(right)) - Number(Boolean(left))
@@ -42,10 +42,10 @@ const Player = () => {
 
         // Movement (X/Z)
         if (forward || backward || left || right) {
-             const moveX = direction.current.x * speed * delta;
-             const moveZ = direction.current.z * speed * delta;
-             camera.translateX(moveX);
-             camera.translateZ(-moveZ); 
+            const moveX = direction.current.x * speed * delta;
+            const moveZ = direction.current.z * speed * delta;
+            camera.translateX(moveX);
+            camera.translateZ(-moveZ);
         }
 
         // Jumping (Y)
@@ -77,16 +77,16 @@ const ExperienceScene = ({ onLock, onUnlock }: { onLock: () => void, onUnlock: (
 
             {/* Camera starts inside the penthouse */}
             <PerspectiveCamera makeDefault position={[0, 2, 0]} />
-            
-            <PointerLockControls 
-                selector="#experience-canvas" 
+
+            <PointerLockControls
+                selector="#experience-canvas"
                 onLock={onLock}
                 onUnlock={onUnlock}
             />
             <Player />
 
             <group scale={[3, 3, 3]} position={[0, -2, 0]}>
-                 <Penthouse /> 
+                <Penthouse />
             </group>
         </>
     );
@@ -100,7 +100,7 @@ export default function ExperiencePage() {
         { name: Controls.right, keys: ['ArrowRight', 'd', 'D'] },
         { name: Controls.jump, keys: ['Space'] },
         { name: Controls.sprint, keys: ['Shift'] },
-      ]
+    ]
 
     const [isLocked, setIsLocked] = useState(false);
     const router = useRouter();
@@ -116,29 +116,33 @@ export default function ExperiencePage() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [router]);
 
+    useEffect(() => {
+        window.dispatchEvent(new CustomEvent("cursor:toggle", { detail: { hide: isLocked } }));
+    }, [isLocked]);
+
     return (
         <KeyboardControls map={map}>
-            <div style={{ width: "100vw", height: "100vh", background: "#000" }}>
+            <div className="experience-page" style={{ width: "100vw", height: "100vh", background: "#000" }}>
                 <Canvas id="experience-canvas" style={{ width: "100%", height: "100%" }}>
                     <Suspense fallback={null}>
-                        <ExperienceScene 
-                            onLock={() => setIsLocked(true)} 
-                            onUnlock={() => setIsLocked(false)} 
+                        <ExperienceScene
+                            onLock={() => setIsLocked(true)}
+                            onUnlock={() => setIsLocked(false)}
                         />
                     </Suspense>
                 </Canvas>
                 {!isLocked && (
                     <div style={{
-                        position: "absolute", 
-                        top: "50%", 
-                        left: "50%", 
-                        transform: "translate(-50%, -50%)", 
-                        color: "white", 
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        color: "white",
                         pointerEvents: "none",
                         textAlign: "center"
                     }}>
                         <p>Click to start navigation</p>
-                        <p style={{fontSize: "0.8em", opacity: 0.7}}>WASD to move, Mouse to look, ESC to exit</p>
+                        <p style={{ fontSize: "0.8em", opacity: 0.7 }}>WASD to move, Mouse to look, ESC to exit</p>
                         {/* <p style={{fontSize: "0.8em", opacity: 0.7}}>ESC to exit</p> */}
                     </div>
                 )}
