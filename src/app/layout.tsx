@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Instrument_Sans, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -33,6 +34,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${playfair.variable} ${instrumentSans.variable} ${cormorantGaramond.variable} antialiased`}
       >
+        <CustomCursor />
         {children}
       </body>
     </html>
