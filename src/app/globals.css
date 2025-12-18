@@ -46,13 +46,17 @@ body {
   cursor: none;
 }
 
+/* Hide default cursor globally */
+*,
+*::before,
+*::after,
 a,
 button,
 [role="button"],
 input,
 textarea,
 select {
-  cursor: none;
+  cursor: none !important;
 }
 
 /* Custom class for 3D transforms */

@@ -19,11 +19,31 @@ export default function CustomCursor() {
         return () => window.removeEventListener("cursor:toggle", handleToggle);
     }, []);
 
+    // Force remount key - increments on reset to force React to recreate elements
+    const [resetKey, setResetKey] = useState(0);
+
+    // Listen for reset event (triggered when exiting pointer lock)
+    useEffect(() => {
+        const handleReset = () => {
+            // Increment key to force remount
+            setResetKey(prev => prev + 1);
+        };
+        window.addEventListener("cursor:reset", handleReset);
+        return () => window.removeEventListener("cursor:reset", handleReset);
+    }, []);
+
     // Reset cursor state when navigating to a new route
     useEffect(() => {
         setShouldHide(false);
-        // Reset GSAP positions to avoid stale stacked transforms
+        setIsPointer(false);
+        setIsText(false);
+
+        // Kill all active tweens and reset positions
         if (cursorRef.current && followerRef.current) {
+            gsap.killTweensOf([cursorRef.current, followerRef.current]);
+            gsap.set([cursorRef.current, followerRef.current], {
+                clearProps: "x,y,scale",
+            });
             gsap.set([cursorRef.current, followerRef.current], {
                 x: 0,
                 y: 0,
@@ -87,6 +107,7 @@ export default function CustomCursor() {
         <>
             {/* Main Dot / Caret */}
             <div
+                key={`cursor-dot-${resetKey}`}
                 ref={cursorRef}
                 className={`fixed top-0 left-0 pointer-events-none z-[10001] mix-blend-difference bg-white transition-all duration-300 ease-out
           ${isText ? "w-[1.5px] h-6 rounded-full" : ""}
@@ -97,6 +118,7 @@ export default function CustomCursor() {
 
             {/* Follower Ring / Capsule */}
             <div
+                key={`cursor-ring-${resetKey}`}
                 ref={followerRef}
                 className={`fixed top-0 left-0 pointer-events-none z-[10000] mix-blend-difference border border-white/40 rounded-full transition-all duration-500 ease-out
           ${isPointer ? "w-14 h-14 bg-white/10 border-white" : ""}
