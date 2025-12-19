@@ -56,10 +56,18 @@ export default function CustomCursor() {
             });
         };
 
+        const handleClick = () => {
+            import("@/utils/audioManager").then((mod) => {
+                mod.playClickSound();
+            });
+        };
+
         window.addEventListener("mousemove", moveCursor);
+        window.addEventListener("mousedown", handleClick);
 
         return () => {
             window.removeEventListener("mousemove", moveCursor);
+            window.removeEventListener("mousedown", handleClick);
         };
     }, []);
 

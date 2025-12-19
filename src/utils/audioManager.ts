@@ -43,5 +43,13 @@ export const stopAllAudio = () => {
     stopWindGrassSound();
 };
 
+export const playClickSound = () => {
+    if (typeof window !== "undefined") {
+        const clickSound = new Audio('/sounds/SFX/click.mp3');
+        clickSound.volume = 0.4;
+        clickSound.play().catch(() => { });
+    }
+};
+
 export const getExperienceBackgroundMusic = () => experienceBackgroundMusic;
 export const getWindGrassSound = () => windGrassSound;
