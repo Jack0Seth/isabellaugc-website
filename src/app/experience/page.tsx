@@ -6,6 +6,7 @@ import { Environment, PointerLockControls, KeyboardControls, useKeyboardControls
 import { Suspense, useRef, useEffect, useState } from "react";
 import { Penthouse } from "@/components/PentHouse";
 import * as THREE from "three";
+import { stopAllAudio } from "@/utils/audioManager";
 
 // Define controls
 enum Controls {
@@ -104,6 +105,11 @@ export default function ExperiencePage() {
 
     const [isLocked, setIsLocked] = useState(false);
     const router = useRouter();
+
+    // Stop all audio when entering experience page
+    useEffect(() => {
+        stopAllAudio();
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

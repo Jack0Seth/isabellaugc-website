@@ -190,6 +190,7 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
     // Audio references
     const landingIntroMusic = useRef<HTMLAudioElement | null>(null);
     const syntheticMusic = useRef<HTMLAudioElement | null>(null);
+    const landingIntroStarted = useRef(false);
 
     // Initialize audio on mount
     useEffect(() => {
@@ -198,7 +199,14 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
             landingIntroMusic.current = new Audio('/sounds/SFX/landing_intro.mp3');
             landingIntroMusic.current.loop = true;
             landingIntroMusic.current.volume = 0.3;
-            landingIntroMusic.current.play().catch(() => { });
+
+            // Try to play, but it might be blocked by browser
+            landingIntroMusic.current.play().then(() => {
+                landingIntroStarted.current = true;
+            }).catch(() => {
+                // Autoplay was blocked, will retry on user interaction
+                console.log("Autoplay blocked, waiting for user interaction");
+            });
 
             // Synthetic music
             syntheticMusic.current = new Audio('/sounds/SFX/synthetic-music.mp3');
@@ -226,6 +234,13 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
             const x = (e.clientX / window.innerWidth) * 2 - 1;
             const y = -(e.clientY / window.innerHeight) * 2 + 1;
             globalMouse.current.set(x, y);
+
+            // Try to start landing intro if it hasn't started yet (autoplay was blocked)
+            if (!landingIntroStarted.current && landingIntroMusic.current) {
+                landingIntroMusic.current.play().then(() => {
+                    landingIntroStarted.current = true;
+                }).catch(() => { });
+            }
         };
 
         const handleMouseDown = (e: MouseEvent) => {
