@@ -8,6 +8,7 @@ import { Penthouse } from "@/components/PentHouse";
 import ExperienceOverlay from "@/components/ExperienceOverlay";
 import NavigationHUD from "@/components/NavigationHUD";
 import * as THREE from "three";
+import { stopAllAudio, stopWindGrassSound } from "@/utils/audioManager";
 
 // Define controls
 enum Controls {
@@ -33,6 +34,9 @@ const Player = () => {
     const velocityY = useRef(0);
     const isJumping = useRef(false);
 
+    // Track if player has moved to stop wind-n-grass sound
+    const hasMovedRef = useRef(false);
+
     useFrame((state, delta) => {
         const { forward, backward, left, right, sprint, jump } = get()
 
@@ -44,6 +48,12 @@ const Player = () => {
 
         // Movement (X/Z)
         if (forward || backward || left || right) {
+            // Stop wind-n-grass sound on first movement
+            if (!hasMovedRef.current) {
+                stopWindGrassSound();
+                hasMovedRef.current = true;
+            }
+
             const moveX = direction.current.x * speed * delta;
             const moveZ = direction.current.z * speed * delta;
             camera.translateX(moveX);
@@ -109,12 +119,17 @@ export default function ExperiencePage() {
     const [canLock, setCanLock] = useState(true);
     const router = useRouter();
 
-    // Handle unlock (ESC press while locked) - reload page to reset cursor
-    const handleUnlock = () => {
-        if (isReloading) return;
-        setIsReloading(true);
-        window.location.reload();
-    };
+    // Stop all audio when entering experience page
+    useEffect(() => {
+        stopAllAudio();
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                router.push("/");
+            }
+        };
 
     // Handle lock with cooldown to prevent double-click freeze
     const handleLock = () => {

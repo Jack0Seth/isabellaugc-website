@@ -8,7 +8,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { LoaderShaderMaterial } from "./shaders/LoaderShaderMaterial";
 import * as THREE from "three";
 import { Suspense, useMemo } from "react";
-import { startExperienceBackgroundMusic } from "@/utils/audioManager";
+import { startExperienceBackgroundMusic, startWindGrassSound } from "@/utils/audioManager";
 
 const PenthouseHologram = ({
     globalMouse,
@@ -61,9 +61,10 @@ const PenthouseHologram = ({
             // After 10 seconds, the final holographic effect starts and pulses stop
             const inPulsePhase = holdTimeRef.current < 10.0;
 
-            // Stop landing intro music when holding starts
-            if (landingIntroMusic && !landingIntroMusic.paused) {
+            // Stop landing intro music when holding completes (10 seconds)
+            if (!inPulsePhase && landingIntroMusic && !landingIntroMusic.paused) {
                 landingIntroMusic.pause();
+                landingIntroMusic.currentTime = 0;
             }
 
             if (inPulsePhase) {
@@ -190,6 +191,7 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
     // Audio references
     const landingIntroMusic = useRef<HTMLAudioElement | null>(null);
     const syntheticMusic = useRef<HTMLAudioElement | null>(null);
+    const landingIntroStarted = useRef(false);
 
     // Initialize audio on mount
     useEffect(() => {
@@ -198,7 +200,14 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
             landingIntroMusic.current = new Audio('/sounds/SFX/landing_intro.mp3');
             landingIntroMusic.current.loop = true;
             landingIntroMusic.current.volume = 0.3;
-            landingIntroMusic.current.play().catch(() => { });
+
+            // Try to play, but it might be blocked by browser
+            landingIntroMusic.current.play().then(() => {
+                landingIntroStarted.current = true;
+            }).catch(() => {
+                // Autoplay was blocked, will retry on user interaction
+                console.log("Autoplay blocked, waiting for user interaction");
+            });
 
             // Synthetic music
             syntheticMusic.current = new Audio('/sounds/SFX/synthetic-music.mp3');
@@ -226,6 +235,13 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
             const x = (e.clientX / window.innerWidth) * 2 - 1;
             const y = -(e.clientY / window.innerHeight) * 2 + 1;
             globalMouse.current.set(x, y);
+
+            // Try to start landing intro if it hasn't started yet (autoplay was blocked)
+            if (!landingIntroStarted.current && landingIntroMusic.current) {
+                landingIntroMusic.current.play().then(() => {
+                    landingIntroStarted.current = true;
+                }).catch(() => { });
+            }
         };
 
         const handleMouseDown = (e: MouseEvent) => {
@@ -285,14 +301,21 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
     }, [showEnter]);
 
     const handleEnterClick = () => {
-        // Stop synthetic music and start experience background music
+        // Stop synthetic music
         if (syntheticMusic.current) {
             syntheticMusic.current.pause();
             syntheticMusic.current.currentTime = 0;
         }
 
-        // Start experience background music using global audio manager
+        // Stop landing intro if still playing
+        if (landingIntroMusic.current) {
+            landingIntroMusic.current.pause();
+            landingIntroMusic.current.currentTime = 0;
+        }
+
+        // Start both experience background music and wind-n-grass using global audio manager
         startExperienceBackgroundMusic();
+        startWindGrassSound();
 
         if (onEnter) onEnter();
         if (containerRef.current) {
