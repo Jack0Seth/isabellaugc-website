@@ -5,6 +5,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, PointerLockControls, KeyboardControls, useKeyboardControls, PerspectiveCamera } from "@react-three/drei";
 import { Suspense, useRef, useEffect, useState } from "react";
 import { Penthouse } from "@/components/PentHouse";
+import ExperienceOverlay from "@/components/ExperienceOverlay";
+import NavigationHUD from "@/components/NavigationHUD";
 import * as THREE from "three";
 import { stopAllAudio, stopWindGrassSound } from "@/utils/audioManager";
 
@@ -113,6 +115,8 @@ export default function ExperiencePage() {
     ]
 
     const [isLocked, setIsLocked] = useState(false);
+    const [isReloading, setIsReloading] = useState(false);
+    const [canLock, setCanLock] = useState(true);
     const router = useRouter();
 
     // Stop all audio when entering experience page
@@ -126,10 +130,22 @@ export default function ExperiencePage() {
                 router.push("/");
             }
         };
-
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [router]);
+
+    // Handle lock with cooldown to prevent double-click freeze
+    const handleLock = () => {
+        if (!canLock) return;
+        setIsLocked(true);
+        setCanLock(false);
+        // Re-enable after 1 second
+        setTimeout(() => setCanLock(true), 1000);
+    };
+
+    const handleUnlock = () => {
+        setIsLocked(false);
+    };
 
     useEffect(() => {
         window.dispatchEvent(new CustomEvent("cursor:toggle", { detail: { hide: isLocked } }));
@@ -141,11 +157,18 @@ export default function ExperiencePage() {
                 <Canvas id="experience-canvas" style={{ width: "100%", height: "100%" }}>
                     <Suspense fallback={null}>
                         <ExperienceScene
-                            onLock={() => setIsLocked(true)}
-                            onUnlock={() => setIsLocked(false)}
+                            onLock={handleLock}
+                            onUnlock={handleUnlock}
                         />
                     </Suspense>
                 </Canvas>
+
+                {/* Navigation Overlay - visible when not locked */}
+                <ExperienceOverlay isVisible={!isLocked} />
+
+                {/* Navigation HUD - visible when locked (actively navigating) */}
+                <NavigationHUD isVisible={isLocked} />
+
                 {!isLocked && (
                     <div style={{
                         position: "absolute",
@@ -156,9 +179,7 @@ export default function ExperiencePage() {
                         pointerEvents: "none",
                         textAlign: "center"
                     }}>
-                        <p>Click to start navigation</p>
-                        <p style={{ fontSize: "0.8em", opacity: 0.7 }}>WASD to move, Mouse to look, ESC to exit</p>
-                        {/* <p style={{fontSize: "0.8em", opacity: 0.7}}>ESC to exit</p> */}
+                        <p className="font-instrument-sans text-sm tracking-widest uppercase">Click to start navigation</p>
                     </div>
                 )}
             </div>
