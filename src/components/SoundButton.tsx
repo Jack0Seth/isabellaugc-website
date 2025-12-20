@@ -40,30 +40,30 @@ const SoundButton = () => {
             const analyser = getAudioAnalyser();
             const centerX = size / 2;
             const centerY = size / 2;
-            
+
             // Calculate delta time
             const deltaTime = (timestamp - lastTimestamp) / 1000; // seconds
             lastTimestamp = timestamp;
-            
+
             // Track playback time when sound is enabled
             if (isSoundEnabled && analyser) {
                 playbackTime += deltaTime;
             } else {
                 playbackTime = 0; // Reset when muted
             }
-            
+
             // Dynamic radius growth after 30 seconds
             // Grows from 0 to max 6 pixels over 60 seconds (after the initial 30s threshold)
             const GROWTH_THRESHOLD = 30; // seconds
             const MAX_GROWTH = 6; // max additional pixels
             const GROWTH_DURATION = 60; // seconds to reach max growth
-            
+
             let radiusGrowth = 0;
             if (playbackTime > GROWTH_THRESHOLD) {
                 const growthProgress = Math.min((playbackTime - GROWTH_THRESHOLD) / GROWTH_DURATION, 1);
                 radiusGrowth = growthProgress * MAX_GROWTH;
             }
-            
+
             const baseRadius = 20 + radiusGrowth; // Growing base radius
             const maxRadius = 28 + radiusGrowth; // Growing max radius
 
@@ -101,10 +101,10 @@ const SoundButton = () => {
                         const dataIndex = Math.min(i * sampleRate, bufferLength - 1);
                         const v = dataArray[dataIndex] / 128.0; // 0..2 (1 is center)
                         const deviation = (v - 1) * amplification; // -1..1 amplified
-                        
+
                         const angle = (i / points) * Math.PI * 2 - Math.PI / 2; // Start from top
                         const radius = baseRadius + radiusOffset + deviation * (maxRadius - baseRadius);
-                        
+
                         const x = centerX + Math.cos(angle) * radius;
                         const y = centerY + Math.sin(angle) * radius;
 
@@ -122,14 +122,14 @@ const SoundButton = () => {
                 // Outer glow layer - glow intensity also grows slightly
                 ctx.shadowColor = glowColor;
                 ctx.shadowBlur = 10 + radiusGrowth;
-                
+
                 // Ghost wave (wider, lower opacity)
                 drawRadialWave(secondaryColor, 1.5, 2.5, 2);
-                
+
                 // Primary wave (sharp, high visibility)
                 ctx.shadowBlur = 5 + radiusGrowth * 0.5;
                 drawRadialWave(primaryColor, 2, 4, 0);
-                
+
                 ctx.shadowBlur = 0;
 
             } else {
@@ -162,7 +162,7 @@ const SoundButton = () => {
     return (
         <button
             onClick={handleToggle}
-            className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[10000] flex flex-col items-center gap-2 group cursor-none pointer-events-auto"
+            className="fixed top-6 left-0 right-0 mx-auto w-fit z-[10000] flex flex-col items-center gap-2 group cursor-none pointer-events-auto"
             aria-label={isSoundEnabled ? "Mute sound" : "Unmute sound"}
         >
             <div className="relative w-16 h-16 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-xl border border-white/10 transition-all duration-300 hover:bg-black/40 hover:border-white/20 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]">
@@ -172,9 +172,9 @@ const SoundButton = () => {
                     className="absolute inset-0"
                 />
             </div>
-            
+
             {/* Label */}
-            <span className="text-[9px] font-bold tracking-[0.2em] text-[#F6F3E8]/60 group-hover:text-[#F6F3E8]/90 transition-colors duration-300 uppercase">
+            <span className="text-[9px] font-bold tracking-[0.2em] text-white mix-blend-difference uppercase">
                 {isSoundEnabled ? "Sound" : "Muted"}
             </span>
         </button>
