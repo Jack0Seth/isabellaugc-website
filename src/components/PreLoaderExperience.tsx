@@ -299,6 +299,29 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
         };
     }, []);
 
+    // Greeting Logic
+    const [greeting, setGreeting] = useState("");
+    const greetingRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const now = new Date();
+        const hours = now.getHours();
+        let text = "";
+        if (hours >= 5 && hours < 12) text = "Good Morning";
+        else if (hours >= 12 && hours < 17) text = "Good Afternoon";
+        else text = "Good Evening";
+        setGreeting(text);
+    }, []);
+
+    useGSAP(() => {
+        if (greeting && greetingRef.current) {
+            gsap.fromTo(greetingRef.current, 
+                { opacity: 0, y: 30 }, 
+                { opacity: 1, y: 0, duration: 1.5, ease: "power3.out", delay: 0.5 }
+            );
+        }
+    }, [greeting]);
+
     useEffect(() => {
         if (progress === 100) {
             const timer = setTimeout(() => setShowEnter(true), 500);
@@ -398,6 +421,12 @@ const PreLoaderExperience: React.FC<PreLoaderExperienceProps> = ({ onEnter }) =>
                 </div>
 
                 {/* CENTER HOLD INDICATOR */}
+                {greeting && (
+                    <div ref={greetingRef} className="absolute top-[23%] left-1/2 transform -translate-x-1/2 text-center pointer-events-none z-30 opacity-0">
+                         <span className="font-playfair text-2xl md:text-3xl italic text-[#231F20] opacity-80">{greeting}</span>
+                    </div>
+                )}
+
                 {showEnter && (
                     <div className="absolute top-32 left-1/2 transform -translate-x-1/2 flex flex-col items-center justify-center z-30 pointer-events-none select-none">
                         <div className="relative flex flex-col items-center justify-center gap-4 bg-[#F6F3E8]/80 backdrop-blur-md rounded-full p-6 shadow-lg border border-[#231F20]/10">

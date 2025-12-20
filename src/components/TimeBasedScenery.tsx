@@ -6,13 +6,10 @@ import { useGSAP } from '@gsap/react';
 
 const TimeBasedScenery: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
-    const [greeting, setGreeting] = useState('');
     const [isNight, setIsNight] = useState(false);
     const [positionX, setPositionX] = useState('100vw');
     const containerRef = useRef<HTMLDivElement>(null);
     const sunMoonRef = useRef<HTMLDivElement>(null);
-    const greetingRef = useRef<HTMLDivElement>(null);
-    const blurRef = useRef<HTMLDivElement>(null);
     const mainRef = useRef<HTMLDivElement>(null);
     const hasAnimated = useRef(false);
 
@@ -41,12 +38,6 @@ const TimeBasedScenery: React.FC = () => {
             setPositionX(`${percent}vw`);
 
             if (showGreeting) {
-                let text = '';
-                if (hours >= 5 && hours < 12) text = 'Good Morning';
-                else if (hours >= 12 && hours < 15) text = 'Good Afternoon';
-                else text = 'Good Evening';
-
-                setGreeting(text + "!");
                 setIsVisible(true);
             }
         };
@@ -66,7 +57,7 @@ const TimeBasedScenery: React.FC = () => {
         };
     }, []);
 
-    // Entrance Animation (Greeting + Initial Sun/Moon entrance)
+    // Entrance Animation (Initial Sun/Moon entrance)
     useGSAP(() => {
         if (!isVisible || hasAnimated.current) return;
 
@@ -83,35 +74,6 @@ const TimeBasedScenery: React.FC = () => {
                 ease: "power2.out"
             }
         );
-
-        // Backdrop Blur and Greeting Animation
-        gsap.timeline()
-            .to(blurRef.current, {
-                opacity: 1,
-                duration: 1.5,
-                ease: "power2.out"
-            })
-            .fromTo(greetingRef.current,
-                { opacity: 0, scale: 0.8, y: 50 },
-                {
-                    opacity: 1,
-                    scale: 1,
-                    y: 0,
-                    duration: 2,
-                    ease: "power3.out"
-                }, "-=1")
-            .to(greetingRef.current, {
-                opacity: 0,
-                y: -50,
-                duration: 1.5,
-                delay: 3,
-                ease: "power3.in"
-            })
-            .to(blurRef.current, {
-                opacity: 0,
-                duration: 1.5,
-                ease: "power2.in"
-            }, "-=1");
 
     }, { scope: mainRef, dependencies: [isVisible] });
 
@@ -131,12 +93,6 @@ const TimeBasedScenery: React.FC = () => {
 
     return (
         <div ref={mainRef} className="pointer-events-none">
-            {/* Backdrop Blur Overlay - Fixed to viewport */}
-            <div
-                ref={blurRef}
-                className="fixed inset-0 z-[80] pointer-events-none opacity-0 backdrop-blur-[4px] bg-black/5"
-            />
-
             {/* Scenery Container - Absolute so it scrolls with content */}
             <div ref={containerRef} className="absolute inset-x-0 top-0 h-screen pointer-events-none z-[0] overflow-hidden">
                 {/* Sun or Moon Wrapper */}
@@ -153,17 +109,6 @@ const TimeBasedScenery: React.FC = () => {
                         <div className="w-full h-full bg-[#FFD700] rounded-full shadow-[0_0_60px_rgba(255,215,0,0.6)] animate-pulse" />
                     )}
                 </div>
-            </div>
-
-            {/* Greeting Message - Direct child of root to avoid stacking context issues */}
-            <div
-                ref={greetingRef}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-8 pointer-events-none z-[100]"
-            >
-                <h2 className="font-playfair text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-main-black opacity-100 transition-colors duration-1500">
-                    {greeting}
-                </h2>
-                <div className="w-16 h-px bg-main-black mx-auto mt-6 opacity-30" />
             </div>
         </div>
     );

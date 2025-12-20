@@ -131,22 +131,48 @@ const HudOverlay: React.FC = () => {
             </div>
 
             {/* Left Vertical Ruler - Hidden on mobile */}
-            <div className="hud-ruler hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex-col justify-between items-center fixed">
-                {/* Ticks */}
-                {Array.from({ length: 15 }).map((_, i) => (
-                    <div key={i} className={`w-2 h-[1px] bg-main-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
-                ))}
+            <div className="hud-ruler hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 h-[40vh] w-[1px] flex-col justify-between items-center fixed">
+                {/* Main Axis Line */}
+                <div className="absolute inset-y-0 w-[1px] bg-gradient-to-b from-transparent via-main-black/20 to-transparent" />
+                
+                {/* Abstract Data Pattern */}
+                {Array.from({ length: 41 }).map((_, i) => {
+                    const isMajor = i % 10 === 0;
+                    const isMedium = i % 5 === 0;
+                    return (
+                        <div 
+                            key={i} 
+                            className={`
+                                h-[1px] bg-main-black transition-all duration-300
+                                ${isMajor ? 'w-4 opacity-80' : isMedium ? 'w-2 opacity-40' : 'w-0.5 opacity-20'}
+                            `} 
+                        />
+                    );
+                })}
 
                 {/* Interactive Indicator */}
                 <div ref={leftIndicatorRef} className="absolute top-0 left-[-4px] w-0 h-0 border-l-[6px] border-r-[0px] border-t-[4px] border-b-[4px] border-l-main-black border-t-transparent border-b-transparent" />
             </div>
 
             {/* Right Vertical Ruler - Hidden on mobile */}
-            <div className="hud-ruler hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 h-[30vh] w-[1px] bg-main-black/20 flex-col justify-between items-center fixed">
-                {/* Ticks */}
-                {Array.from({ length: 15 }).map((_, i) => (
-                    <div key={i} className={`w-2 h-[1px] bg-main-black/40 ${i === 0 || i === 14 ? 'w-4' : ''}`} />
-                ))}
+            <div className="hud-ruler hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 h-[40vh] w-[1px] flex-col justify-between items-center fixed">
+                 {/* Main Axis Line */}
+                 <div className="absolute inset-y-0 w-[1px] bg-gradient-to-b from-transparent via-main-black/20 to-transparent" />
+
+                {/* Abstract Data Pattern */}
+                {Array.from({ length: 41 }).map((_, i) => {
+                    const isMajor = i % 10 === 0;
+                    const isMedium = i % 5 === 0;
+                    return (
+                        <div 
+                            key={i} 
+                            className={`
+                                h-[1px] bg-main-black transition-all duration-300
+                                ${isMajor ? 'w-4 opacity-80' : isMedium ? 'w-2 opacity-40' : 'w-0.5 opacity-20'}
+                            `} 
+                        />
+                    );
+                })}
 
                 {/* Interactive Indicator */}
                 <div ref={rightIndicatorRef} className="absolute top-0 right-[-4px] w-0 h-0 border-r-[6px] border-l-[0px] border-t-[4px] border-b-[4px] border-r-main-black border-t-transparent border-b-transparent" />
