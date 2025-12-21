@@ -87,7 +87,7 @@ const AnimatedPenthouse = (props: any & { onDebugUpdate?: (info: DebugInfo) => v
         });
 
         // Ensure camera starts at initial position
-        camera.position.set(0, 5, 12);
+        camera.position.set(0, 7, 12);
         camera.rotation.set(0, 0, 0); // Reset rotation to be sure
 
         // --- CAMERA ANIMATION PATH (4 Phases -> Total 17s) ---
@@ -228,7 +228,7 @@ const PenthouseWrapper = () => {
                     <Environment preset="sunset" />
                     <Suspense fallback={null}>
                         <AnimatedPenthouse
-                            position={[0, 3, 0]}
+                            position={[0, 5, 0]}
                             scale={[0.3, 0.3, 0.3]}
                         />
                     </Suspense>
