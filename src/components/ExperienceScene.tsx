@@ -4,7 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Environment, PointerLockControls, useKeyboardControls, PerspectiveCamera } from "@react-three/drei";
 import { useRef } from "react";
 import * as THREE from "three";
-import { Penthouse } from "@/components/PentHouse";
+import { SceneModel } from "@/components/SceneModel";
 import { stopWindGrassSound } from "@/utils/audioManager";
 
 enum Controls {
@@ -82,9 +82,8 @@ const Player = () => {
 export const ExperienceScene = ({ onLock, onUnlock }: { onLock: () => void, onUnlock: () => void }) => {
     return (
         <>
-            <ambientLight intensity={0.6} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
-            <Environment files="/hdr/shanghai_night.hdr" background />
+            <Environment files="/hdr/skybox.hdr" background />
 
             {/* Camera starts at human eye level */}
             <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
@@ -98,7 +97,7 @@ export const ExperienceScene = ({ onLock, onUnlock }: { onLock: () => void, onUn
 
             {/* Real-world scale (1 unit = 1 meter) */}
             <group scale={[1, 1, 1]} position={[0, 0, 0]}>
-                <Penthouse />
+                <SceneModel />
             </group>
         </>
     );
