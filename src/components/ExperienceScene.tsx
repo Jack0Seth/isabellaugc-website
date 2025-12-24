@@ -2,10 +2,12 @@
 
 import { useFrame, useThree } from "@react-three/fiber";
 import { Environment, PointerLockControls, useKeyboardControls, PerspectiveCamera } from "@react-three/drei";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { SceneModel } from "@/components/SceneModel";
 import { stopWindGrassSound } from "@/utils/audioManager";
+import { Physics, RigidBody, CapsuleCollider } from "@react-three/rapier";
+import type { RapierRigidBody } from "@react-three/rapier";
 
 enum Controls {
     forward = 'forward',
@@ -19,33 +21,54 @@ enum Controls {
 const Player = () => {
     const [, get] = useKeyboardControls<Controls>()
     const { camera } = useThree();
-    const velocity = useRef(new THREE.Vector3())
+    const rigidBodyRef = useRef<RapierRigidBody>(null);
     const direction = useRef(new THREE.Vector3())
 
     // Real-world units (Meters)
-    const WALK_SPEED = 1.5; // ~5.4 km/h
-    const SPRINT_SPEED = 4.0; // ~14.4 km/h
-    const JUMP_FORCE = 5.0; // Moderate jump
-    const GRAVITY = 9.81; // Earth gravity
-    const EYE_LEVEL = 1.6; // Average eye level
-
-    // Y-velocity for jumping
-    const velocityY = useRef(0);
-    const isJumping = useRef(false);
+    const WALK_SPEED = 4.0; // m/s
+    const SPRINT_SPEED = 8.0; // m/s
+    const JUMP_FORCE = 2.5; // Impulse strength (reduced for realistic jump)
+    const PLAYER_HEIGHT = 1.8; // Total height
+    const EYE_OFFSET = 0.7; // Eye level from capsule center
 
     // Track if player has moved to stop wind-n-grass sound
     const hasMovedRef = useRef(false);
+    const canJumpRef = useRef(true);
 
-    useFrame((state, delta) => {
+    // Set initial camera position
+    useEffect(() => {
+        camera.position.set(0, PLAYER_HEIGHT, 0);
+    }, [camera]);
+
+    useFrame(() => {
+        if (!rigidBodyRef.current) return;
+
         const { forward, backward, left, right, sprint, jump } = get()
-
         const speed = sprint ? SPRINT_SPEED : WALK_SPEED;
 
-        direction.current.x = Number(Boolean(right)) - Number(Boolean(left))
-        direction.current.z = Number(Boolean(forward)) - Number(Boolean(backward))
-        direction.current.normalize()
+        // Get camera's forward direction (ignore Y for horizontal movement)
+        const cameraDirection = new THREE.Vector3();
+        camera.getWorldDirection(cameraDirection);
+        cameraDirection.y = 0;
+        cameraDirection.normalize();
 
-        // Movement (X/Z)
+        // Get camera's right direction
+        const cameraRight = new THREE.Vector3();
+        cameraRight.crossVectors(cameraDirection, new THREE.Vector3(0, 1, 0));
+        cameraRight.normalize();
+
+        // Calculate movement direction based on input and camera orientation
+        direction.current.set(0, 0, 0);
+        if (forward) direction.current.add(cameraDirection);
+        if (backward) direction.current.sub(cameraDirection);
+        if (right) direction.current.add(cameraRight);
+        if (left) direction.current.sub(cameraRight);
+        direction.current.normalize();
+
+        // Get current velocity to preserve Y velocity (gravity)
+        const currentVel = rigidBodyRef.current.linvel();
+
+        // Apply horizontal movement
         if (forward || backward || left || right) {
             // Stop wind-n-grass sound on first movement
             if (!hasMovedRef.current) {
@@ -53,30 +76,45 @@ const Player = () => {
                 hasMovedRef.current = true;
             }
 
-            const moveX = direction.current.x * speed * delta;
-            const moveZ = direction.current.z * speed * delta;
-            camera.translateX(moveX);
-            camera.translateZ(-moveZ);
+            rigidBodyRef.current.setLinvel({
+                x: direction.current.x * speed,
+                y: currentVel.y, // Preserve vertical velocity
+                z: direction.current.z * speed
+            }, true);
+        } else {
+            // Stop horizontal movement when no input
+            rigidBodyRef.current.setLinvel({
+                x: 0,
+                y: currentVel.y,
+                z: 0
+            }, true);
         }
 
-        // Jumping (Y)
-        if (jump && !isJumping.current) {
-            velocityY.current = JUMP_FORCE;
-            isJumping.current = true;
+        // Jumping - check if on ground (low Y velocity)
+        if (jump && canJumpRef.current && Math.abs(currentVel.y) < 0.1) {
+            rigidBodyRef.current.applyImpulse({ x: 0, y: JUMP_FORCE, z: 0 }, true);
+            canJumpRef.current = false;
+            setTimeout(() => { canJumpRef.current = true; }, 500); // Cooldown
         }
 
-        // Apply Gravity
-        velocityY.current -= GRAVITY * delta;
-        camera.position.y += velocityY.current * delta;
-
-        // Floor Collision
-        if (camera.position.y < EYE_LEVEL) {
-            camera.position.y = EYE_LEVEL;
-            velocityY.current = 0;
-            isJumping.current = false;
-        }
+        // Sync camera position to physics body
+        const position = rigidBodyRef.current.translation();
+        camera.position.set(position.x, position.y + EYE_OFFSET, position.z);
     })
-    return null;
+
+    return (
+        <RigidBody
+            ref={rigidBodyRef}
+            position={[8, 2, -2.5]}
+            enabledRotations={[false, false, false]} // Lock rotation
+            mass={1}
+            type="dynamic"
+            colliders={false}
+            lockRotations
+        >
+            <CapsuleCollider args={[0.5, 0.3]} /> {/* half-height, radius */}
+        </RigidBody>
+    );
 }
 
 export const ExperienceScene = ({ onLock, onUnlock }: { onLock: () => void, onUnlock: () => void }) => {
@@ -93,12 +131,14 @@ export const ExperienceScene = ({ onLock, onUnlock }: { onLock: () => void, onUn
                 onLock={onLock}
                 onUnlock={onUnlock}
             />
-            <Player />
 
             {/* Real-world scale (1 unit = 1 meter) */}
-            <group scale={[1, 1, 1]} position={[0, 0, 0]}>
-                <SceneModel />
-            </group>
+            <Physics gravity={[0, -9.81, 0]}>
+                <Player />
+                <group scale={[1, 1, 1]} position={[0, 0, 0]}>
+                    <SceneModel />
+                </group>
+            </Physics>
         </>
     );
 };

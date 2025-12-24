@@ -52,15 +52,14 @@ const CloudShaderMaterialImpl = shaderMaterial(
 
     void main() {
       // Moving cloud coordinates
-      vec2 uv = vUv * 3.0 + vec2(uTime * uCloudSpeed * 0.2, uTime * uCloudSpeed * 0.1);
+      vec2 uv = vUv * 5.0 + vec2(uTime * uCloudSpeed * 0.2, uTime * uCloudSpeed * 0.1);
       
       // Generate noise pattern
       float n = fbm(uv + fbm(uv + vec2(0.0, uTime * 0.01)));
       
       // Soften edges and create cloud shapes
-      // COMMENT: If the scene is too white, increase the first parameter of smoothstep (e.g., to 0.6) 
-      // to make the clouds thinner and reveal more of the city gaps.
-      float alpha = smoothstep(0.6, 1.2, n);
+      // Higher threshold (0.85) creates more gaps and smaller areas
+      float alpha = smoothstep(0.85, 1.2, n);
       
       // Make it wispy
       // COMMENT: uCloudDensity controls the overall opacity. 0.0005 is very low; check if the 

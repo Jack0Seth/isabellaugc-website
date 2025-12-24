@@ -6,7 +6,7 @@ const CityGroundShaderMaterialImpl = shaderMaterial(
   {
     uColorWater: new THREE.Color("#4fa1d8"), // Blue
     uColorGrass: new THREE.Color("#5e9e58"), // Green
-    uColorPavement: new THREE.Color("#d0d0ce"), // Grey
+    uColorPavement: new THREE.Color("#4a7d45"), // Darker Green
     uColorEdge: new THREE.Color("#e8e8e8"), // Sky match
     uRadiusStart: 200.0,
     uRadiusEnd: 500.0,

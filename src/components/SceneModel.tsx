@@ -3,11 +3,12 @@
 import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useGLTF, MeshTransmissionMaterial } from '@react-three/drei'
+import { RigidBody } from '@react-three/rapier'
 import { GLTF } from 'three-stdlib'
 import { ThreeElements, useFrame } from '@react-three/fiber'
-import './CityShaderMaterial' // Register the custom shader material
-import './CityGroundShaderMaterial' // Register the custom ground shader material
-import './CloudShaderMaterial' // Register the custom cloud shader material
+import './shaders/CityShaderMaterial' // Register the custom shader material
+import './shaders/CityGroundShaderMaterial' // Register the custom ground shader material
+import './shaders/CloudShaderMaterial' // Register the custom cloud shader material
 
 type GLTFResult = GLTF & {
     nodes: {
@@ -59,24 +60,30 @@ export function SceneModel(props: ThreeElements['group']) {
                 </mesh>
             </group>
             <group position={[8.047, 0.288, -2.653]}>
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.floor.geometry}
-                    material={materials.carrelage_046_ovcolbfbfbfcolpic12contpic03_Room_Entity_Material}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.floor_sep.geometry}
-                    material={materials.gris_001_Room_Entity_Material}
-                />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.grass_ground.geometry}
-                    material={materials.gazon_007_Room_Entity_Material}
-                />
+                <RigidBody type="fixed" colliders="trimesh">
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes.floor.geometry}
+                        material={materials.carrelage_046_ovcolbfbfbfcolpic12contpic03_Room_Entity_Material}
+                    />
+                </RigidBody>
+                <RigidBody type="fixed" colliders="trimesh">
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes.floor_sep.geometry}
+                        material={materials.gris_001_Room_Entity_Material}
+                    />
+                </RigidBody>
+                <RigidBody type="fixed" colliders="trimesh">
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes.grass_ground.geometry}
+                        material={materials.gazon_007_Room_Entity_Material}
+                    />
+                </RigidBody>
                 <mesh
                     castShadow
                     receiveShadow
@@ -597,12 +604,14 @@ export function SceneModel(props: ThreeElements['group']) {
                     geometry={nodes.Object_95.geometry}
                     material={materials.wc_005____couvercle}
                 />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.outside_floor.geometry}
-                    material={materials.bitume_001_ovcol737373colpic12contpic11_Room_Entity_Material}
-                />
+                <RigidBody type="fixed" colliders="trimesh">
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes.outside_floor.geometry}
+                        material={materials.bitume_001_ovcol737373colpic12contpic11_Room_Entity_Material}
+                    />
+                </RigidBody>
                 <mesh
                     castShadow
                     receiveShadow
@@ -627,12 +636,14 @@ export function SceneModel(props: ThreeElements['group']) {
                     geometry={nodes.tree_pots_thin.geometry}
                     material={materials.pack_004_salon_001_plante___nopaint_feuilles}
                 />
-                <mesh
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.walls.geometry}
-                    material={materials.blanc_001_Wall_Entity_Material}
-                />
+                <RigidBody type="fixed" colliders="trimesh">
+                    <mesh
+                        castShadow
+                        receiveShadow
+                        geometry={nodes.walls.geometry}
+                        material={materials.blanc_001_Wall_Entity_Material}
+                    />
+                </RigidBody>
             </group>
             <mesh
                 castShadow
@@ -654,7 +665,7 @@ export function SceneModel(props: ThreeElements['group']) {
                     uRadiusEnd={500}
                     uColorWater={new THREE.Color("#4fa1d8")}
                     uColorGrass={new THREE.Color("#5e9e58")}
-                    uColorPavement={new THREE.Color("#505050")} // Dark Asphalt
+                    uColorPavement={new THREE.Color("#4a7d45")} // Darker Green
                     uColorEdge={new THREE.Color("#e8e8e8")}
                 />
             </mesh>
@@ -666,7 +677,7 @@ export function SceneModel(props: ThreeElements['group']) {
                     ref={cloudMat}
                     transparent
                     uColor={new THREE.Color("#ffffff")}
-                    uCloudDensity={0.6}
+                    uCloudDensity={0.4}
                     uCloudSpeed={0.15}
                 />
             </mesh>

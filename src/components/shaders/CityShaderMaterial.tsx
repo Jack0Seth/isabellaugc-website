@@ -48,6 +48,7 @@ const CityShaderMaterialImpl = shaderMaterial(
     varying vec3 vPosition;
     varying vec3 vWorldPosition;
 
+    // Simulation of office lights for night city
     float hash(vec2 p) {
       return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
     }
@@ -56,10 +57,10 @@ const CityShaderMaterialImpl = shaderMaterial(
       // Basic lighting
       vec3 lightDir = normalize(uSunDirection);
       float diff = max(dot(vNormal, lightDir), 0.0);
-      float ambient = 0.65;
-      float lighting = diff * 0.5 + ambient;
+      float ambient = 0.4;
+      float lighting = diff * 0.6 + ambient;
 
-      // Grid mapping for windows
+      // Grid mapping for windows - use world space for consistency
       float scale = 4.0; 
       vec2 gridUv;
       
@@ -68,7 +69,6 @@ const CityShaderMaterialImpl = shaderMaterial(
         gridUv = vWorldPosition.zy * scale; 
       } else if (absNormal.y > absNormal.x && absNormal.y > absNormal.z) {
         gridUv = vWorldPosition.xz * scale; 
-        // Roof - no windows usually
       } else {
         gridUv = vWorldPosition.xy * scale;
       }
@@ -78,43 +78,59 @@ const CityShaderMaterialImpl = shaderMaterial(
       
       float noise = hash(tileId);
       
-      // Window logic
+      // --- ANTI-ALIASED WINDOWS ---
+      // Use fwidth for pixel-perfect edges that don't flicker or merge
       float windowWidth = uWindowSize * 0.8;
-      float windowHeight = 0.7; // Taller windows for city look
-      
+      float windowHeight = 0.7;
       vec2 margin = (vec2(1.0) - vec2(windowWidth, windowHeight)) * 0.5;
-      vec2 windowRect = step(margin, grid) * step(grid, 1.0 - margin);
-      float isWindow = windowRect.x * windowRect.y;
-
-      // Mask roofs (strict upward facing check) and random empty tiles
-      // Use absolute normal Y for safety, though usually roof is +Y
-      if (absNormal.y > 0.6 || noise > 0.8) {
-        isWindow = 0.0;
-      }
-
-      // Height gradient
-      float h = smoothstep(-10.0, 50.0, vPosition.y);
-      vec3 wallColor = mix(uColorLow, uColorHigh, h);
       
-      // Add slight tile variation
-      wallColor *= 0.95 + 0.1 * hash(tileId + 1.0);
-
-      // Mix wall and window
-      // For windows, add a slight reflection/tint
-      vec3 finalWindowColor = mix(uWindowColor, vec3(0.5, 0.6, 0.7), 0.2); 
-      vec3 color = mix(wallColor, finalWindowColor, isWindow);
+      vec2 fw = fwidth(grid);
+      vec2 edge0 = margin;
+      vec2 edge1 = 1.0 - margin;
       
-      // Apply Lighting
-      color *= lighting;
+      vec2 windowFull = smoothstep(edge0 - fw, edge0 + fw, grid) * 
+                        smoothstep(edge1 + fw, edge1 - fw, grid);
+      float isWindowArea = windowFull.x * windowFull.y;
+
+      // Mask roofs and random empty tiles
+      if (absNormal.y > 0.6) isWindowArea = 0.0;
+      if (noise > 0.95) isWindowArea = 0.0;
+
+      // --- INTERIOR DEPTH / PARALLAX ---
+      // Distort interior coordinates based on view direction
+      vec3 viewDir = normalize(cameraPosition - vWorldPosition);
+      vec2 interiorUv = (grid - margin) / (vec2(windowWidth, windowHeight));
+      
+      // Simple room variation
+      float roomType = hash(tileId + 5.0);
+      vec3 interiorColor = mix(uWindowColor, vec3(0.05, 0.05, 0.1), roomType);
+      
+      // --- RANDOM WINDOW LIGHTS (Night Look) ---
+      // Some windows are on, some are off
+      float isLit = step(0.85, noise); // 15% of windows are lit
+      vec3 lightColor = mix(vec3(1.0, 0.9, 0.7), vec3(0.7, 0.8, 1.0), roomType);
+      
+      // Add a simple "room content" shadow
+      float interiorShadow = smoothstep(0.4, 0.6, interiorUv.x + interiorUv.y * 0.5);
+      vec3 finalWindowColor = mix(interiorColor, lightColor * 1.5, isLit * interiorShadow);
+      
+      // --- WALL TEXTURE ---
+      float wallH = smoothstep(-10.0, 50.0, vPosition.y);
+      vec3 wallBase = mix(uColorLow, uColorHigh, wallH);
+      
+      // Subtle concrete detail
+      float detail = hash(gridUv * 10.0);
+      wallBase *= 0.98 + 0.04 * detail;
+      
+      // Final color assembly
+      vec3 color = mix(wallBase, finalWindowColor, isWindowArea);
+      
+      // Apply Lighting (Windows are less affected by external light if lit from inside)
+      color *= mix(lighting, 1.0, isWindowArea * isLit);
 
       // Fog Logic
       float dist = length(vWorldPosition - cameraPosition);
-      // COMMENT: uFogNear and uFogFar control when the buildings disappear into the fog.
-      // Increase uFogFar (e.g. to 800) to make the city visible at further distances.
       float fogFactor = smoothstep(uFogNear, uFogFar, dist);
-      
-      // Mix with fog color
-      // COMMENT: If the "white out" is too strong, make uFogColor darker or slightly transparent.
       color = mix(color, uFogColor, fogFactor);
 
       gl_FragColor = vec4(color, 1.0);
