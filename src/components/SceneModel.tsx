@@ -5,7 +5,7 @@ import React, { useRef } from 'react'
 import { useGLTF, MeshTransmissionMaterial, useVideoTexture } from '@react-three/drei'
 import { RigidBody } from '@react-three/rapier'
 import { GLTF } from 'three-stdlib'
-import { ThreeElements, useFrame } from '@react-three/fiber'
+import { ThreeElements, useFrame, useThree } from '@react-three/fiber'
 import './shaders/CityShaderMaterial' // Register the custom shader material
 import './shaders/CityGroundShaderMaterial' // Register the custom ground shader material
 import './shaders/CloudShaderMaterial' // Register the custom cloud shader material
@@ -42,7 +42,101 @@ export function SceneModel(props: ThreeElements['group']) {
         }
     });
 
-    const videoTexture = useVideoTexture('/videos/example_video.mp4')
+    const [audioPos, setAudioPos] = React.useState<[number, number, number]>([0, 0, 0])
+
+    React.useLayoutEffect(() => {
+        if (nodes.tv_screen_1_screen && nodes.tv_screen_1_screen.geometry) {
+            const geometry = nodes.tv_screen_1_screen.geometry;
+            geometry.computeBoundingBox();
+            const bbox = geometry.boundingBox;
+            if(bbox) {
+                const size = new THREE.Vector3();
+                bbox.getSize(size);
+                
+                // Determine dominant axes for planar projection
+                const axes = [
+                    { idx: 0, size: size.x },
+                    { idx: 1, size: size.y },
+                    { idx: 2, size: size.z }
+                ].sort((a, b) => b.size - a.size);
+                
+                const uAxis = axes[0].idx;
+                const vAxis = axes[1].idx;
+                
+                const minU = uAxis === 0 ? bbox.min.x : uAxis === 1 ? bbox.min.y : bbox.min.z;
+                const rangeU = uAxis === 0 ? size.x : uAxis === 1 ? size.y : size.z;
+                
+                const minV = vAxis === 0 ? bbox.min.x : vAxis === 1 ? bbox.min.y : bbox.min.z;
+                const rangeV = vAxis === 0 ? size.x : vAxis === 1 ? size.y : size.z;
+
+                const posAttribute = geometry.attributes.position;
+                const uvs = new Float32Array(posAttribute.count * 2);
+
+                for(let i=0; i<posAttribute.count; i++) {
+                    const uVal = posAttribute.getComponent(i, uAxis);
+                    const vVal = posAttribute.getComponent(i, vAxis);
+                    
+                    uvs[i*2] = (uVal - minU) / rangeU;
+                    uvs[i*2+1] = (vVal - minV) / rangeV;
+                }
+                
+                geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+                geometry.attributes.uv.needsUpdate = true;
+
+                // Calculate center for audio positioning
+                const center = new THREE.Vector3();
+                bbox.getCenter(center);
+                setAudioPos([center.x, center.y, center.z]);
+            }
+        }
+    }, [nodes]);
+
+    const videoTexture = useVideoTexture('/videos/example_video.mp4', {
+        unsuspend: 'canplay',
+        muted: false,
+        loop: true,
+        start: true,
+        playsInline: true,
+    })
+    videoTexture.flipY = true
+    // flipX does not exist on VideoTexture, using repeat and offset to flip horizontally
+    videoTexture.repeat.x = -1
+    videoTexture.offset.x = 1
+
+    const audioRef = useRef<THREE.PositionalAudio>(null!)
+    const { camera } = useThree()
+    const [listener] = React.useState(() => new THREE.AudioListener())
+
+    React.useEffect(() => {
+        camera.add(listener)
+        return () => {
+            camera.remove(listener)
+        }
+    }, [camera, listener])
+
+    React.useEffect(() => {
+        if (audioRef.current && videoTexture.image instanceof HTMLVideoElement) {
+            const video = videoTexture.image as any
+            
+            // Check if source already exists on the video element
+            if (!video._audioSource) {
+                try {
+                    // Create MediaElementSource only once per video element
+                    video._audioSource = audioRef.current.context.createMediaElementSource(video)
+                } catch (e) {
+                    console.warn("Failed to create media element source:", e)
+                }
+            }
+
+            // If we have a source, connect it using setNodeSource
+            if (video._audioSource) {
+                audioRef.current.setNodeSource(video._audioSource)
+                audioRef.current.setRefDistance(1) // Reduced distance for faster falloff
+                audioRef.current.setRolloffFactor(1) // Gentler rolloff
+                audioRef.current.setVolume(0.5) // Reduced volume
+            }
+        }
+    }, [videoTexture])
 
     return (
         <group {...props} dispose={null}>
@@ -477,7 +571,6 @@ export function SceneModel(props: ThreeElements['group']) {
                     castShadow
                     receiveShadow
                     geometry={nodes.Object_73.geometry}
-                    material={materials.pack_003_salon_television___material__83}
                 />
                 <mesh
                     castShadow
@@ -641,13 +734,19 @@ export function SceneModel(props: ThreeElements['group']) {
                     castShadow
                     receiveShadow
                     geometry={nodes.tv_screen_1.geometry}
+                    material={materials['pack_003_salon_television___material__83']}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.tv_screen_1_screen.geometry}
+                    material={materials['mirror.nocompress']}
                 >
-                     <meshBasicMaterial 
+                    <meshBasicMaterial 
                         map={videoTexture} 
-                        toneMapped={false} 
-                        polygonOffset 
-                        polygonOffsetFactor={-1} 
+                        toneMapped={true} 
                     />
+                    <positionalAudio ref={audioRef} args={[listener]} position={audioPos} />
                 </mesh>
                 <mesh
                     castShadow
