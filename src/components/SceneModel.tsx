@@ -43,22 +43,20 @@ export function SceneModel(props: ThreeElements['group']) {
 
     return (
         <group {...props} dispose={null}>
-            <group position={[0, -23.641, 0]}>
+            <RigidBody type="fixed" colliders="trimesh" position={[0, -23.641, 0]}>
                 <mesh
                     castShadow
                     receiveShadow
                     geometry={nodes.City_City_0.geometry}
-                >
-                    <cityShaderMaterial />
-                </mesh>
+                    material={materials.City}
+                />
                 <mesh
                     castShadow
                     receiveShadow
                     geometry={nodes.City_City_0001.geometry}
-                >
-                    <cityShaderMaterial />
-                </mesh>
-            </group>
+                    material={materials.City}
+                />
+            </RigidBody>
             <group position={[8.047, 0.288, -2.653]}>
                 <RigidBody type="fixed" colliders="trimesh">
                     <mesh
@@ -67,16 +65,12 @@ export function SceneModel(props: ThreeElements['group']) {
                         geometry={nodes.floor.geometry}
                         material={materials.carrelage_046_ovcolbfbfbfcolpic12contpic03_Room_Entity_Material}
                     />
-                </RigidBody>
-                <RigidBody type="fixed" colliders="trimesh">
                     <mesh
                         castShadow
                         receiveShadow
                         geometry={nodes.floor_sep.geometry}
                         material={materials.gris_001_Room_Entity_Material}
                     />
-                </RigidBody>
-                <RigidBody type="fixed" colliders="trimesh">
                     <mesh
                         castShadow
                         receiveShadow
@@ -88,7 +82,7 @@ export function SceneModel(props: ThreeElements['group']) {
                     castShadow
                     receiveShadow
                     geometry={nodes.Object_11.geometry}
-                    material={materials.bois_080}
+                    material={materials['Wood.121']}
                 />
                 <mesh
                     castShadow
@@ -124,7 +118,7 @@ export function SceneModel(props: ThreeElements['group']) {
                     castShadow
                     receiveShadow
                     geometry={nodes.Object_18.geometry}
-                    material={materials.cuir_007}
+                    material={materials['Antique Old Style Sofa Cushion Fabric']}
                 />
                 <mesh
                     castShadow
@@ -542,7 +536,7 @@ export function SceneModel(props: ThreeElements['group']) {
                     castShadow
                     receiveShadow
                     geometry={nodes.Object_85.geometry}
-                    material={materials.resine_tresse_blanche_ovcol737373colpic12contpic11}
+                    material={materials['Jute Matting']}
                 />
                 <mesh
                     castShadow
@@ -636,6 +630,18 @@ export function SceneModel(props: ThreeElements['group']) {
                     geometry={nodes.tree_pots_thin.geometry}
                     material={materials.pack_004_salon_001_plante___nopaint_feuilles}
                 />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.tv_screen_1.geometry}
+                    material={materials['mirror.nocompress']}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.tv_screen_2.geometry}
+                    material={materials['mirror.nocompress']}
+                />
                 <RigidBody type="fixed" colliders="trimesh">
                     <mesh
                         castShadow
@@ -645,60 +651,24 @@ export function SceneModel(props: ThreeElements['group']) {
                     />
                 </RigidBody>
             </group>
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.building_bottom.geometry}
-                material={nodes.building_bottom.material}
-                position={[1.698, 1.043, -2.653]}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.city_ground.geometry}
-                position={[0, -23.641, 0]}
-            >
-                <cityGroundShaderMaterial
-                    ref={groundMat}
-                    transparent
-                    uRadiusStart={200}
-                    uRadiusEnd={500}
-                    uColorWater={new THREE.Color("#4fa1d8")}
-                    uColorGrass={new THREE.Color("#5e9e58")}
-                    uColorPavement={new THREE.Color("#4a7d45")} // Darker Green
-                    uColorEdge={new THREE.Color("#e8e8e8")}
+            <RigidBody type="fixed" colliders="trimesh">
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.building_bottom.geometry}
+                    material={nodes.building_bottom.material}
+                    position={[1.698, 1.043, -2.653]}
                 />
-            </mesh>
-
-            {/* Cloud Layer */}
-            <mesh position={[0, -18, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[800, 800]} />
-                <cloudShaderMaterial
-                    ref={cloudMat}
-                    transparent
-                    uColor={new THREE.Color("#ffffff")}
-                    uCloudDensity={0.4}
-                    uCloudSpeed={0.15}
+            </RigidBody>
+            <RigidBody type="fixed" colliders="trimesh">
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.city_ground.geometry}
+                    material={nodes.city_ground.material}
+                    position={[0, -23.641, 0]}
                 />
-            </mesh>
-
-            {/* Blur Layer */}
-            {/* COMMENT: This layer blurs the city background. If the scene is too white or 
-                you can't see the city, reduce 'roughness' (e.g. to 0.2) or remove this mesh. */}
-            <mesh position={[0, -20, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[800, 800]} />
-                <MeshTransmissionMaterial
-                    transmission={1}
-                    roughness={0.55} // Reduce this to 0.1-0.2 for better visibility
-                    thickness={5}
-                    ior={1.0}
-                    chromaticAberration={0.01}
-                    anisotropy={0}
-                    distortion={0}
-                    distortionScale={0}
-                    temporalDistortion={0}
-                />
-            </mesh>
+            </RigidBody>
         </group>
     )
 }
