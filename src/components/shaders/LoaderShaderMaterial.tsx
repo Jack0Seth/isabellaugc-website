@@ -44,9 +44,14 @@ const LoaderShaderMaterial = shaderMaterial(
            disp = (dropDir * 25.0 + aRandom * 0.5) * s2;
       } else {
            // WIND UP/AWAY (Standard)
-           vec3 windDir = vec3(2.0, 1.0, -2.0); 
-           vec3 shatterDir = normalize(normal + aRandom); 
-           disp = (shatterDir * 3.0 + windDir * 10.0) * s2; 
+           // More random, less uniform wind
+           vec3 windDir = vec3(2.0, 3.0, -2.0); // More upward, less sideways force
+           
+           // Dominant random direction (Explosion)
+           vec3 shatterDir = normalize(normal * 0.3 + aRandom); 
+           
+           // Multipliers: Explosion (15.0) >> Wind (5.0)
+           disp = (shatterDir * 15.0 + windDir * 5.0) * s2; 
       }
       
       vec3 pos = position + disp;
